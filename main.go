@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
@@ -8,12 +9,19 @@ import (
 	"os"
 )
 
+var (
+	PORT string
+)
+
 func main() {
+	flag.StringVar(&PORT, "p", "80", "set service port number.")
+	flag.Parse()
+
 	hostname, _ := os.Hostname()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tpl := template.Must(template.ParseGlob("*.html"))
 		tpl.ExecuteTemplate(w, "index.html", hostname)
 	})
-	fmt.Println("service staring...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("web service staring at PORT " + PORT + " ...")
+	log.Fatal(http.ListenAndServe(":"+PORT, nil))
 }
